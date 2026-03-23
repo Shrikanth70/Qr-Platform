@@ -1,9 +1,8 @@
-FROM python:3.10-slim
+FROM python:3.10-slim-bookworm
 
-# Install system dependencies required by opencv-python and pyzbar
+# Install system dependencies required by pyzbar
 RUN apt-get update && apt-get install -y \
     libzbar0 \
-    libgl1-mesa-glx \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
