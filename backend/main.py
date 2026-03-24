@@ -8,7 +8,11 @@ app = FastAPI(title="QR Platform API", version="1.0.0")
 # Configure CORS for frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], # In production, restrict this to the frontend URL
+    allow_origins=[
+        "http://localhost:5173",
+        "https://qx-platform.vercel.app",
+        "https://qr-platform-b9y2.onrender.com"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
