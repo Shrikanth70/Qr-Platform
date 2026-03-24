@@ -70,8 +70,20 @@ function VerifyResult({ result }) {
 
         {payload.data && (
           <div className="flex border-b border-slate-800 pb-3">
-            <span className="w-1/3 text-slate-500 font-medium">Content</span>
+            <span className="w-1/3 text-slate-500 font-medium">
+              {payload.type === 'link' || payload.type === 'url' ? 'Link' : 'Content'}
+            </span>
             <span className="w-2/3 text-white font-semibold break-all">{payload.data}</span>
+          </div>
+        )}
+        
+        {/* Optional Contextual Link Description */}
+        {payload.data && (payload.type === 'link' || payload.type === 'url') && (
+          <div className="flex border-b border-slate-800 pb-3">
+            <span className="w-1/3 text-slate-500 font-medium">Overview</span>
+            <span className="w-2/3 text-slate-400 text-sm">
+              This QR code securely connects you directly to the linked web address.
+            </span>
           </div>
         )}
 

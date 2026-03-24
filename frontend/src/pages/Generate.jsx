@@ -16,10 +16,19 @@ function Generate() {
   
   const [logoFile, setLogoFile] = useState(null)
   
-  const logoUrl = useMemo(() => {
-    if (!logoFile) return null;
-    return URL.createObjectURL(logoFile);
-  }, [logoFile]);
+  const [logoBase64, setLogoBase64] = useState(null)
+  
+  useEffect(() => {
+    if (!logoFile) {
+      setLogoBase64(null)
+      return
+    }
+    const reader = new FileReader()
+    reader.onload = (e) => setLogoBase64(e.target.result)
+    reader.readAsDataURL(logoFile)
+  }, [logoFile])
+
+  const displayLogoUrl = selectedPattern === 'Logo Center' ? logoBase64 : null;
 
   const [downloadFormat, setDownloadFormat] = useState('png')
   const [actualQrMatrix, setActualQrMatrix] = useState(null)
@@ -84,10 +93,15 @@ function Generate() {
     const serializer = new XMLSerializer();
     let source = serializer.serializeToString(svgElement);
 
+    const targetSize = parseInt(size, 10) || 512;
+
     // Provide explicitly required xmlns wrapper or canvas exports will fail
     if (!source.match(/^<svg[^>]+xmlns="http\:\/\/www\.w3\.org\/2000\/svg"/)) {
         source = source.replace(/^<svg/, '<svg xmlns="http://www.w3.org/2000/svg"');
     }
+    
+    // Explicitly set dimensions to ensure crisp SVG rasterization onto the specified canvas dimensions
+    source = source.replace(/^<svg/, `<svg width="${targetSize}" height="${targetSize}"`);
     
     const bgStr = `<rect width="100%" height="100%" fill="${bgColor}" />`;
     source = source.replace('>', `>${bgStr}`); 
@@ -98,7 +112,6 @@ function Generate() {
     const img = new Image();
     img.onload = () => {
       const canvas = document.createElement("canvas");
-      const targetSize = parseInt(size, 10) || 512;
       canvas.width = targetSize;
       canvas.height = targetSize;
       
@@ -250,16 +263,18 @@ function Generate() {
               </div>
             </div>
 
-            <div>
-              <label className={labelClass}>Embedded Image / Logo (Optional)</label>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={(e) => setLogoFile(e.target.files[0])}
-                className="w-full text-slate-300 file:mr-4 file:py-3 file:px-5 file:rounded-lg file:border-0 file:text-sm file:font-bold file:bg-blue-600/20 file:text-blue-400 hover:file:bg-blue-600/30 hover:file:text-blue-300 transition-colors cursor-pointer border border-slate-700/60 rounded-xl bg-slate-900/40 p-1.5 shadow-inner"
-              />
-              <p className="mt-2 text-xs text-slate-500 opacity-80">(Central automatic placement for distinct corporate or personal branding.)</p>
-            </div>
+            {selectedPattern === 'Logo Center' && (
+              <div className="animate-in fade-in duration-300">
+                <label className={labelClass}>Embedded Image / Logo (Optional)</label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => setLogoFile(e.target.files[0])}
+                  className="w-full text-slate-300 file:mr-4 file:py-3 file:px-5 file:rounded-lg file:border-0 file:text-sm file:font-bold file:bg-blue-600/20 file:text-blue-400 hover:file:bg-blue-600/30 hover:file:text-blue-300 transition-colors cursor-pointer border border-slate-700/60 rounded-xl bg-slate-900/40 p-1.5 shadow-inner"
+                />
+                <p className="mt-2 text-xs text-slate-500 opacity-80">(Central automatic placement for distinct corporate or personal branding.)</p>
+              </div>
+            )}
           </div>
 
           <h2 className="text-xl sm:text-2xl font-bold mb-6 text-white border-b border-slate-700/50 pb-4">
@@ -310,7 +325,7 @@ function Generate() {
             fgColor={fgColor} 
             bgColor={bgColor} 
             size={size}
-            logoUrl={logoUrl}
+            logoUrl={displayLogoUrl}
           />
         </div>
       </div>
