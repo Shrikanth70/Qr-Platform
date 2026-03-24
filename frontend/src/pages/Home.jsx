@@ -36,7 +36,7 @@ function Home() {
       </div>
       
       {/* Footer */}
-      <footer className="mt-16 md:mt-20 text-center text-slate-500/70 text-sm font-medium tracking-widest uppercase">
+      <footer className="fixed bottom-4 md:bottom-6 left-0 w-full text-center text-slate-500/70 text-[0.7rem] sm:text-sm font-medium tracking-widest uppercase z-10 pointer-events-none">
         &copy; Shrikanth 2026
       </footer>
     </div>
