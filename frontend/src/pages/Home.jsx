@@ -34,6 +34,11 @@ function Home() {
           />
         </div>
       </div>
+      
+      {/* Footer */}
+      <footer className="mt-16 md:mt-20 text-center text-slate-500/70 text-sm font-medium tracking-widest uppercase">
+        &copy; Shrikanth 2026
+      </footer>
     </div>
   )
 }
