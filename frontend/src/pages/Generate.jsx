@@ -38,6 +38,10 @@ function Generate() {
       alert('Please enter a valid link');
       return;
     }
+    if (!title.trim()) {
+      alert('Please enter a title for your QR code');
+      return;
+    }
 
     setIsGenerating(true)
     try {
@@ -108,10 +112,13 @@ function Generate() {
 
       ctx.drawImage(img, padding, padding, drawSize, drawSize);
       
+      // Sanitize title for filename
+      const safeTitle = title.trim().replace(/[^a-zA-Z0-9-_\s]/g, '').replace(/\s+/g, '-') || 'qr-code';
+      
       const downloadUrl = canvas.toDataURL(`image/${downloadFormat === 'jpg' ? 'jpeg' : downloadFormat}`, 1.0);
       const a = document.createElement('a');
       a.href = downloadUrl;
-      a.download = `qr-code.${downloadFormat}`;
+      a.download = `${safeTitle}.${downloadFormat}`;
       a.click();
       URL.revokeObjectURL(url);
     };
@@ -221,7 +228,7 @@ function Generate() {
             
             <div className="grid md:grid-cols-2 gap-6">
               <div>
-                <label className={labelClass}>Title (Optional)</label>
+                <label className={labelClass}>Title <span className="text-blue-400">*</span></label>
                 <input
                   type="text"
                   placeholder="e.g. My Portfolio"
@@ -263,7 +270,7 @@ function Generate() {
             <div className="flex-grow">
               <button
                 onClick={handleGenerate}
-                disabled={isGenerating || !link.trim()}
+                disabled={isGenerating || !link.trim() || !title.trim()}
                 className="w-full bg-blue-600 text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-blue-500 disabled:opacity-50 disabled:bg-slate-700 transition-all shadow-[0_0_20px_rgba(37,99,235,0.3)] hover:shadow-[0_0_30px_rgba(37,99,235,0.5)] active:scale-[0.98]"
               >
                 {isGenerating ? 'Encoding Matrix...' : 'Generate Format'}

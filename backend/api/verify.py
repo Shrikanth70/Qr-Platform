@@ -115,10 +115,32 @@ async def verify_qr(file: UploadFile = File(...)):
         try:
             parsed_json = json.loads(qr_data)
             payload = parsed_json
+            
+            # Identify fields
+            name = payload.get('name') or payload.get('student_name') or payload.get('recipient')
+            issued_by = payload.get('issued_by') or payload.get('organization') or payload.get('issuer')
+            date = payload.get('date') or payload.get('issued_date')
+            
+            if name and issued_by:
+                desc = f"This is a certificate issued to {name} by {issued_by}."
+            elif name:
+                desc = f"This appears to be a certificate issued to {name}."
+            elif issued_by:
+                desc = f"This appears to be a certificate issued by {issued_by}."
+            else:
+                desc = "This is a structured data/certificate QR code."
+                
+            if date and "issued to" in desc:
+                desc = desc[:-1] + f" on {date}."
+
             return {
                 "success": True,
                 "message": "Valid Secure Certificate",
-                "data": payload
+                "data": {
+                    "type": "certificate",
+                    "description": desc,
+                    **payload
+                }
             }
         except json.JSONDecodeError:
             pass
@@ -126,6 +148,12 @@ async def verify_qr(file: UploadFile = File(...)):
         # Check URL
         if qr_data.startswith("http://") or qr_data.startswith("https://"):
             page_title = fetch_url_metadata(qr_data)
+            
+            if page_title:
+                desc = f"This QR links to the {page_title} website."
+            else:
+                desc = "This QR links to an external website."
+
             return {
                 "success": True,
                 "message": "Valid URL QR",
@@ -133,7 +161,7 @@ async def verify_qr(file: UploadFile = File(...)):
                     "type": "url",
                     "data": qr_data,
                     "title": page_title or "External Link",
-                    "description": "Click the link below to visit the site."
+                    "description": desc
                 }
             }
 
@@ -143,7 +171,8 @@ async def verify_qr(file: UploadFile = File(...)):
             "message": "Valid Text QR",
             "data": {
                 "type": "text",
-                "data": qr_data
+                "data": qr_data,
+                "description": "This QR contains plain text content."
             }
         }
 

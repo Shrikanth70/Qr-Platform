@@ -35,6 +35,12 @@ function VerifyResult({ result }) {
       {/* MAIN CONTENT */}
       <div className="space-y-4 text-slate-300 bg-slate-900/50 border border-slate-800 p-6 rounded-xl">
 
+        {payload.description && (
+          <div className="p-4 bg-blue-500/10 border border-blue-500/20 rounded-xl mb-4 text-blue-100 font-medium">
+            {payload.description}
+          </div>
+        )}
+
         {payload.title && (
           <div className="flex border-b border-slate-800 pb-3">
             <span className="w-1/3 text-slate-500 font-medium">Title</span>
@@ -42,24 +48,30 @@ function VerifyResult({ result }) {
           </div>
         )}
 
-        {payload.description && (
+        {payload.type && (
           <div className="flex border-b border-slate-800 pb-3">
-            <span className="w-1/3 text-slate-500 font-medium">Description</span>
-            <span className="w-2/3 text-white font-semibold">{payload.description}</span>
+            <span className="w-1/3 text-slate-500 font-medium">Type</span>
+            <span className="w-2/3 text-white font-semibold capitalize">{payload.type}</span>
           </div>
         )}
+
+        {/* Dynamic Fields Loop */}
+        {Object.entries(payload).map(([key, value]) => {
+          if (['title', 'description', 'type', 'qrId', 'createdAt', 'expiresAt', 'data'].includes(key)) return null;
+          if (typeof value === 'object') return null; // Avoid rendering raw nested objects
+          
+          return (
+            <div key={key} className="flex border-b border-slate-800 pb-3">
+              <span className="w-1/3 text-slate-500 font-medium capitalize">{key.replace(/_/g, ' ')}</span>
+              <span className="w-2/3 text-white font-semibold">{String(value)}</span>
+            </div>
+          )
+        })}
 
         {payload.data && (
           <div className="flex border-b border-slate-800 pb-3">
             <span className="w-1/3 text-slate-500 font-medium">Content</span>
             <span className="w-2/3 text-white font-semibold break-all">{payload.data}</span>
-          </div>
-        )}
-
-        {payload.type && (
-          <div className="flex border-b border-slate-800 pb-3">
-            <span className="w-1/3 text-slate-500 font-medium">Type</span>
-            <span className="w-2/3 text-white font-semibold capitalize">{payload.type}</span>
           </div>
         )}
 
