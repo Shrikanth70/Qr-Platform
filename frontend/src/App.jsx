@@ -31,7 +31,7 @@ function App() {
             <Route path="/verify" element={<Verify />} />
           </Routes>
         </main>
-        
+
         {/* Footer */}
         <footer className="w-full py-6 text-center text-slate-500/70 text-[0.7rem] sm:text-sm font-medium tracking-widest uppercase">
           &copy; Shrikanth 2026

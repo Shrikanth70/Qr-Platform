@@ -89,22 +89,24 @@ function Generate() {
     const svgElement = document.getElementById('qr-render-svg');
     if (!svgElement) return;
 
-    // Create a Blob from the SVG String
-    const serializer = new XMLSerializer();
-    let source = serializer.serializeToString(svgElement);
-
     const targetSize = parseInt(size, 10) || 512;
 
-    // Provide explicitly required xmlns wrapper or canvas exports will fail
-    if (!source.match(/^<svg[^>]+xmlns="http\:\/\/www\.w3\.org\/2000\/svg"/)) {
-        source = source.replace(/^<svg/, '<svg xmlns="http://www.w3.org/2000/svg"');
-    }
+    // We clone the SVG to avoid regular expression fragility on serialization and safe live-DOM
+    const clonedSvg = svgElement.cloneNode(true);
+    clonedSvg.setAttribute("width", targetSize);
+    clonedSvg.setAttribute("height", targetSize);
+    clonedSvg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
     
-    // Explicitly set dimensions to ensure crisp SVG rasterization onto the specified canvas dimensions
-    source = source.replace(/^<svg/, `<svg width="${targetSize}" height="${targetSize}"`);
-    
-    const bgStr = `<rect width="100%" height="100%" fill="${bgColor}" />`;
-    source = source.replace('>', `>${bgStr}`); 
+    // Support SVG namespace creation for elements dynamically attached
+    const XMLNS = "http://www.w3.org/2000/svg";
+    const bgRect = document.createElementNS(XMLNS, "rect");
+    bgRect.setAttribute("width", "100%");
+    bgRect.setAttribute("height", "100%");
+    bgRect.setAttribute("fill", bgColor);
+    clonedSvg.insertBefore(bgRect, clonedSvg.firstChild);
+
+    const serializer = new XMLSerializer();
+    const source = serializer.serializeToString(clonedSvg);
 
     const svgBlob = new Blob([source], {type: "image/svg+xml;charset=utf-8"});
     const url = URL.createObjectURL(svgBlob);

@@ -1,6 +1,6 @@
 import React from 'react';
 
-function QRRenderer({ matrix, pattern, fgColor, bgColor, logoUrl }) {
+function QRRenderer({ matrix, pattern, fgColor, bgColor, logoUrl, size }) {
   const isRounded = pattern === 'Rounded';
   const isBold = pattern === 'Bold';
   const isMinimal = pattern === 'Minimal';
@@ -128,7 +128,9 @@ function QRRenderer({ matrix, pattern, fgColor, bgColor, logoUrl }) {
         id="qr-render-svg"
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 100 100"
-        className="w-full h-full block"
+        width={size ? parseInt(size, 10) : 512}
+        height={size ? parseInt(size, 10) : 512}
+        style={{ width: '100%', height: '100%', display: 'block' }}
         shapeRendering="geometricPrecision"
       >
         <g>

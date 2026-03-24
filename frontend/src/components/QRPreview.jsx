@@ -2,13 +2,13 @@ import QRRenderer from './QRRenderer';
 
 function QRPreview({ matrixArray, isDemo, pattern, fgColor, bgColor, size, logoUrl }) {
   
-  // Predictable physical visual scaling based on expected size outputs.
-  const getScale = () => {
+  // Predictable physical visual bounds based on expected size outputs.
+  const getContainerMaxWidth = () => {
     switch (size) {
-      case '1024': return 'scale-[1.0]'; 
-      case '512': return 'scale-[0.85]'; 
-      case '256': return 'scale-[0.65]';
-      default: return 'scale-[0.85]';
+      case '1024': return '340px'; 
+      case '512': return '240px'; 
+      case '256': return '160px';
+      default: return '340px';
     }
   };
 
@@ -18,8 +18,11 @@ function QRPreview({ matrixArray, isDemo, pattern, fgColor, bgColor, size, logoU
         Live Preview
       </h3>
 
-      {/* The container explicitly respects the sizing visual scaler mapped tightly to the selection */}
-      <div className={`relative flex flex-col items-center justify-center w-full max-w-[320px] aspect-square bg-[#0a0f1c] rounded-3xl border border-white/5 p-4 sm:p-6 shadow-inner transition-transform duration-500 ease-out group`}>
+      {/* The container explicitly respects the physical visual boundaries mapped tightly to the selection */}
+      <div 
+        className={`relative flex flex-col items-center justify-center w-full aspect-square bg-[#0a0f1c] rounded-3xl border border-white/5 p-4 sm:p-6 shadow-inner transition-all duration-500 ease-out group mx-auto`}
+        style={{ maxWidth: getContainerMaxWidth() }}
+      >
         
         {isDemo && (
           <div className="absolute -top-4 right-4 bg-blue-500/10 text-blue-400 border border-blue-500/20 text-[10px] sm:text-xs font-bold px-3 py-1.5 rounded-full uppercase tracking-widest shadow-lg z-10 backdrop-blur-md">
@@ -27,13 +30,14 @@ function QRPreview({ matrixArray, isDemo, pattern, fgColor, bgColor, size, logoU
           </div>
         )}
 
-        <div className={`w-full h-full flex items-center justify-center rounded-2xl transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] ${getScale()}`}>
+        <div className={`w-full h-full flex items-center justify-center rounded-2xl transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)]`}>
           <QRRenderer 
             matrix={isDemo ? null : matrixArray} 
             pattern={pattern} 
             fgColor={fgColor} 
             bgColor={bgColor} 
             logoUrl={logoUrl}
+            size={size}
           />
         </div>
       </div>

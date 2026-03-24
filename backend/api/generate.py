@@ -19,11 +19,13 @@ class GenerateRequest(BaseModel):
 @router.post("/generate")
 def generate_qr(req: GenerateRequest):
     try:
-        # High error correction is critical to allow robust shape clipping and masks on the frontend
+        # Calculate box_size based on requested pixel dimension (assume approx 33 modules for standard layout)
+        calculated_box_size = max(1, req.size // 33) if req.size else 10
+
         qr = qrcode.QRCode(
             version=None,
             error_correction=qrcode.constants.ERROR_CORRECT_H,
-            box_size=10,
+            box_size=calculated_box_size,
             border=4,
         )
         qr.add_data(req.text)
