@@ -1,4 +1,4 @@
-# Intelligent QR Platform 2.0
+# Quick Connect 
 
 A modern, high-performance web application designed for generating customized artistic QR codes and rigorously verifying them via a Python FastAPI backend equipped with advanced optical character recognition heuristics.
 
