@@ -24,13 +24,18 @@ function App() {
       {/* LAYER 3 (TOP): App Content Wrapping Engine */}
       <div className="relative z-10 flex flex-col min-h-screen">
         <Navbar />
-        <main className="flex-grow pt-24 px-6 pb-24">
+        <main className="flex-grow pt-24 px-6 pb-12 w-full flex flex-col">
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/generate" element={<Generate />} />
             <Route path="/verify" element={<Verify />} />
           </Routes>
         </main>
+        
+        {/* Footer */}
+        <footer className="w-full py-6 text-center text-slate-500/70 text-[0.7rem] sm:text-sm font-medium tracking-widest uppercase">
+          &copy; Shrikanth 2026
+        </footer>
       </div>
     </div>
   )
