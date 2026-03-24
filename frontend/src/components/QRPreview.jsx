@@ -1,6 +1,6 @@
 import QRRenderer from './QRRenderer';
 
-function QRPreview({ matrixArray, isDemo, pattern, fgColor, bgColor, size, logoUrl }) {
+function QRPreview({ matrixArray, isDemo, pattern, fgColor, bgColor, size, logoUrl, quietZone }) {
   
   // Predictable physical visual bounds based on expected size outputs.
   const getContainerMaxWidth = () => {
@@ -25,12 +25,12 @@ function QRPreview({ matrixArray, isDemo, pattern, fgColor, bgColor, size, logoU
       >
         
         {isDemo && (
-          <div className="absolute -top-4 right-4 bg-blue-500/10 text-blue-400 border border-blue-500/20 text-[10px] sm:text-xs font-bold px-3 py-1.5 rounded-full uppercase tracking-widest shadow-lg z-10 backdrop-blur-md">
+          <div className="absolute top-4 right-4 bg-blue-500/10 text-blue-400 border border-blue-500/20 text-[10px] sm:text-xs font-bold px-3 py-1.5 rounded-full uppercase tracking-widest shadow-lg z-10 backdrop-blur-md">
             Style Demo
           </div>
         )}
 
-        <div className={`w-full h-full flex items-center justify-center rounded-2xl transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)]`}>
+        <div className={`w-full h-full flex items-center justify-center rounded-2xl transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] min-w-0 min-h-0 overflow-hidden`}>
           <QRRenderer 
             matrix={isDemo ? null : matrixArray} 
             pattern={pattern} 
@@ -38,6 +38,7 @@ function QRPreview({ matrixArray, isDemo, pattern, fgColor, bgColor, size, logoU
             bgColor={bgColor} 
             logoUrl={logoUrl}
             size={size}
+            quietZone={quietZone}
           />
         </div>
       </div>

@@ -10,6 +10,14 @@ function Generate() {
 
   const [selectedPattern, setSelectedPattern] = useState('Classic')
   const [size, setSize] = useState('512')
+  
+  const quietZones = [
+    { label: 'Small', val: '1' },
+    { label: 'Medium', val: '2' },
+    { label: 'Large', val: '4' }
+  ];
+  const [quietZone, setQuietZone] = useState('2');
+
   const [link, setLink] = useState('')
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
@@ -40,7 +48,7 @@ function Generate() {
   // Reset actual image if style/inputs change so user doesn't download a stale QR
   useEffect(() => {
     setActualQrMatrix(null);
-  }, [selectedPattern, fgColor, bgColor, size, link, title, description, logoFile]);
+  }, [selectedPattern, fgColor, bgColor, size, quietZone, link, title, description, logoFile]);
 
   const handleGenerate = async () => {
     if (!link.trim()) {
@@ -63,6 +71,7 @@ function Generate() {
         color: fgColor,
         bgColor: bgColor,
         size: parseInt(size, 10),
+        quietZone: parseInt(quietZone, 10),
         expiresIn: 60
       }
       
@@ -121,11 +130,8 @@ function Generate() {
       ctx.fillStyle = bgColor;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // Enforce the ISO standard Quiet Zone (padding)
-      const padding = Math.floor(targetSize * 0.08); // 8% border
-      const drawSize = targetSize - (padding * 2);
-
-      ctx.drawImage(img, padding, padding, drawSize, drawSize);
+      // The QR matrix natively contains the proper physical quiet zone borders, removing the need for artificial margins
+      ctx.drawImage(img, 0, 0, targetSize, targetSize);
       
       // Sanitize title for filename
       const safeTitle = title.trim().replace(/[^a-zA-Z0-9-_\s]/g, '').replace(/\s+/g, '-') || 'qr-code';
@@ -198,8 +204,8 @@ function Generate() {
             </div>
           </div>
 
-          <div className="grid sm:grid-cols-2 gap-5 mb-10">
-            <div>
+          <div className="grid lg:grid-cols-3 sm:grid-cols-2 gap-5 mb-10">
+            <div className="lg:col-span-1">
               <label className={labelClass}>Foreground Color</label>
               <div className="flex items-center gap-4 bg-slate-900/60 border border-slate-700/60 rounded-xl p-2.5 cursor-pointer focus-within:ring-2 focus-within:ring-blue-500/80 transition-all shadow-inner hover:bg-slate-900/80">
                 <input
@@ -211,7 +217,7 @@ function Generate() {
                 <span className="text-slate-300 uppercase font-mono text-sm tracking-widest font-semibold">{fgColor}</span>
               </div>
             </div>
-            <div>
+            <div className="lg:col-span-1">
               <label className={labelClass}>Background Color</label>
               <div className="flex items-center gap-4 bg-slate-900/60 border border-slate-700/60 rounded-xl p-2.5 cursor-pointer focus-within:ring-2 focus-within:ring-blue-500/80 transition-all shadow-inner hover:bg-slate-900/80">
                 <input
@@ -221,6 +227,24 @@ function Generate() {
                   className="w-10 h-10 rounded-lg shrink-0 bg-transparent border-none cursor-pointer p-0"
                 />
                 <span className="text-slate-300 uppercase font-mono text-sm tracking-widest font-semibold">{bgColor}</span>
+              </div>
+            </div>
+            <div className="sm:col-span-2 lg:col-span-1">
+              <label className={labelClass}>Quiet Zone (Border)</label>
+              <div className="flex gap-2.5 h-[58px]">
+                {quietZones.map((q) => (
+                  <button
+                    key={q.val}
+                    onClick={() => setQuietZone(q.val)}
+                    className={`flex-1 rounded-xl border text-sm font-bold transition-all ${
+                      quietZone === q.val 
+                      ? 'bg-blue-600/20 border-blue-500 text-blue-300 shadow-[0_0_15px_rgba(59,130,246,0.15)]' 
+                      : 'bg-slate-900/50 border-slate-700/60 text-slate-400 hover:border-slate-500'
+                    }`}
+                  >
+                    {q.label}
+                  </button>
+                ))}
               </div>
             </div>
           </div>
@@ -327,6 +351,7 @@ function Generate() {
             fgColor={fgColor} 
             bgColor={bgColor} 
             size={size}
+            quietZone={quietZone}
             logoUrl={displayLogoUrl}
           />
         </div>
